@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace RCDWebAPI
 {
@@ -29,6 +31,9 @@ namespace RCDWebAPI
         {
             // Add framework services.
             services.AddMvc();
+
+             services.AddDbContext<RCDContext>(options =>
+                 options.UseNpgsql(Configuration["Data:PostgreConnection:ConnectionString"]));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,6 +43,8 @@ namespace RCDWebAPI
             loggerFactory.AddDebug();
 
             app.UseMvc();
+
+            Data.SampleData.InitializePostDatabaseAsync(app.ApplicationServices).Wait();
         }
     }
 }
